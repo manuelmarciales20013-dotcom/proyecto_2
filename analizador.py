@@ -5,14 +5,14 @@ from typing import Dict, Any
 class Analizador:
     """Analizador de métricas a partir de un DataFrame de ventas.
 
-    Se espera un DataFrame con columnas: ['producto','cantidad','precio_unitario','total']
+    Se espera un DataFrame con columnas: ['producto','categoria','cantidad','precio_unitario','total','tienda']
     """
 
     def __init__(self, df: pd.DataFrame):
         if not isinstance(df, pd.DataFrame):
             raise TypeError("Analizador requiere un pandas.DataFrame.")
         self.df = df.copy()
-        required = {"producto", "cantidad", "precio_unitario", "total"}
+        required = {"producto", "categoria", "cantidad", "precio_unitario", "total", "tienda"}
         missing = required - set(self.df.columns)
         if missing:
             raise ValueError(f"Faltan columnas requeridas en el DataFrame: {missing}")
@@ -34,6 +34,18 @@ class Analizador:
     def ingreso_promedio_por_producto(self) -> pd.Series:
         return self.df.groupby("producto")["total"].mean().sort_values(ascending=False)
 
+    def ventas_por_categoria(self) -> pd.Series:
+        """Total de ventas agrupado por categoría."""
+        return self.df.groupby("categoria")["total"].sum().sort_values(ascending=False)
+
+    def ventas_por_tienda(self) -> pd.Series:
+        """Total de ventas agrupado por tienda."""
+        return self.df.groupby("tienda")["total"].sum().sort_values(ascending=False)
+
+    def unidades_por_categoria(self) -> pd.Series:
+        """Unidades vendidas por categoría."""
+        return self.df.groupby("categoria")["cantidad"].sum().sort_values(ascending=False)
+
     def resumen_general(self, imprimir: bool = True) -> Dict[str, Any]:
         total = self.total_ventas()
         mas = self.producto_mas_vendido()
@@ -47,6 +59,9 @@ class Analizador:
             "producto_menos_demandado": menos,
             "ingreso_promedio_por_venta": ingreso_prom_prom,
             "ingreso_promedio_por_producto": ingreso_por_producto,
+            "ventas_por_categoria": self.ventas_por_categoria(),
+            "ventas_por_tienda": self.ventas_por_tienda(),
+            "unidades_por_categoria": self.unidades_por_categoria(),
         }
 
         if imprimir:
@@ -60,5 +75,9 @@ class Analizador:
             print(f"Ingreso promedio por venta: ${ingreso_prom_prom:,.2f}")
             print("Ingreso promedio por producto:")
             print(ingreso_por_producto.to_string())
+            print("\nVentas por categoría:")
+            print(self.ventas_por_categoria().to_string())
+            print("\nVentas por tienda:")
+            print(self.ventas_por_tienda().to_string())
 
         return resumen

@@ -1,0 +1,63 @@
+producto,categoria,unidades_vendidas,precio_unitario,total_venta,tienda
+Camisa Polo,Ropa,12,45000,540000,Tienda Centro
+Camisa Polo,Ropa,8,45000,360000,Tienda Norte
+Camisa Polo,Ropa,15,45000,675000,Tienda Sur
+Pantalón Jean,Ropa,10,65000,650000,Tienda Centro
+Pantalón Jean,Ropa,6,65000,390000,Tienda Norte
+Pantalón Jean,Ropa,9,65000,585000,Tienda Sur
+Camiseta Básica,Ropa,25,22000,550000,Tienda Centro
+Camiseta Básica,Ropa,30,22000,660000,Tienda Norte
+Camiseta Básica,Ropa,18,22000,396000,Tienda Sur
+Chaqueta Deportiva,Ropa,5,120000,600000,Tienda Centro
+Chaqueta Deportiva,Ropa,3,120000,360000,Tienda Norte
+Falda Casual,Ropa,7,38000,266000,Tienda Centro
+Falda Casual,Ropa,11,38000,418000,Tienda Sur
+Zapatos Running,Calzado,8,150000,1200000,Tienda Centro
+Zapatos Running,Calzado,6,150000,900000,Tienda Norte
+Zapatos Running,Calzado,10,150000,1500000,Tienda Sur
+Sandalias Verano,Calzado,14,35000,490000,Tienda Centro
+Sandalias Verano,Calzado,20,35000,700000,Tienda Norte
+Sandalias Verano,Calzado,16,35000,560000,Tienda Sur
+Botas Cuero,Calzado,4,180000,720000,Tienda Centro
+Botas Cuero,Calzado,2,180000,360000,Tienda Norte
+Tenis Casual,Calzado,12,95000,1140000,Tienda Centro
+Tenis Casual,Calzado,9,95000,855000,Tienda Sur
+Gorra Deportiva,Accesorios,18,15000,270000,Tienda Centro
+Gorra Deportiva,Accesorios,22,15000,330000,Tienda Norte
+Gorra Deportiva,Accesorios,25,15000,375000,Tienda Sur
+Cinturón Cuero,Accesorios,10,28000,280000,Tienda Centro
+Cinturón Cuero,Accesorios,8,28000,224000,Tienda Norte
+Bolso Mano,Accesorios,6,85000,510000,Tienda Centro
+Bolso Mano,Accesorios,9,85000,765000,Tienda Sur
+Bufanda Lana,Accesorios,5,32000,160000,Tienda Norte
+Bufanda Lana,Accesorios,7,32000,224000,Tienda Sur
+Reloj Deportivo,Accesorios,3,210000,630000,Tienda Centro
+Reloj Deportivo,Accesorios,4,210000,840000,Tienda Norte
+Gafas Sol,Accesorios,8,55000,440000,Tienda Centro
+Gafas Sol,Accesorios,11,55000,605000,Tienda Sur
+Mochila Escolar,Accesorios,15,48000,720000,Tienda Centro
+Mochila Escolar,Accesorios,12,48000,576000,Tienda Norte
+Mochila Escolar,Accesorios,18,48000,864000,Tienda Sur
+Protector Solar,Cuidado Personal,20,25000,500000,Tienda Centro
+Protector Solar,Cuidado Personal,28,25000,700000,Tienda Norte
+Protector Solar,Cuidado Personal,22,25000,550000,Tienda Sur
+Shampoo Natural,Cuidado Personal,15,18000,270000,Tienda Centro
+Shampoo Natural,Cuidado Personal,19,18000,342000,Tienda Norte
+Crema Hidratante,Cuidado Personal,10,42000,420000,Tienda Centro
+Crema Hidratante,Cuidado Personal,13,42000,546000,Tienda Sur
+Perfume Clásico,Cuidado Personal,4,135000,540000,Tienda Centro
+Perfume Clásico,Cuidado Personal,6,135000,810000,Tienda Norte
+Perfume Clásico,Cuidado Personal,3,135000,405000,Tienda Sur
+Balón Fútbol,Deportes,7,38000,266000,Tienda Centro
+Balón Fútbol,Deportes,10,38000,380000,Tienda Norte
+Balón Fútbol,Deportes,12,38000,456000,Tienda Sur
+Colchoneta Yoga,Deportes,6,45000,270000,Tienda Centro
+Colchoneta Yoga,Deportes,8,45000,360000,Tienda Norte
+Banda Elástica,Deportes,14,12000,168000,Tienda Centro
+Banda Elástica,Deportes,18,12000,216000,Tienda Norte
+Banda Elástica,Deportes,20,12000,240000,Tienda Sur
+Pesas 5kg,Deportes,5,55000,275000,Tienda Centro
+Pesas 5kg,Deportes,3,55000,165000,Tienda Sur
+Termo Agua,Deportes,11,28000,308000,Tienda Centro
+Termo Agua,Deportes,15,28000,420000,Tienda Norte
+Termo Agua,Deportes,9,28000,252000,Tienda Sur

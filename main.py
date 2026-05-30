@@ -7,15 +7,6 @@ from venta import Venta
 from analizador import Analizador
 
 
-def crear_sistema_con_datos(n: int = 30, seed: int | None = None) -> SistemaDeVentas:
-    s = SistemaDeVentas()
-    s.cargar_datos_simulados(n=n, seed=seed)
-    return s
-
-
-
-
-
 def _input_int(prompt: str, default: int | None = None) -> int:
     while True:
         val = input(prompt).strip()
@@ -40,7 +31,7 @@ def menu() -> None:
     sistema = SistemaDeVentas()
     while True:
         print("\n--- Sistema de Ventas — Menú ---")
-        print("1) Generar datos simulados")
+        print("1) Cargar datos desde CSV")
         print("2) Registrar producto (manual)")
         print("3) Registrar venta (manual)")
         print("4) Listar productos")
@@ -50,11 +41,8 @@ def menu() -> None:
         opt = input("Selecciona una opción: ").strip()
 
         if opt == "1":
-            n = _input_int("¿Cuántas ventas generar? (enter=30): ", default=30)
-            seed_in = input("Seed (opcional, enter para omitir): ").strip()
-            seed = int(seed_in) if seed_in else None
-            sistema.cargar_datos_simulados(n=n, seed=seed)
-            print(f"Generados {len(sistema.obtener_productos())} productos y {len(sistema.obtener_ventas())} ventas.")
+            sistema.cargar_csv("datos/ventas_tienda.csv")
+            print(f"Cargados {len(sistema.obtener_productos())} productos y {len(sistema.obtener_ventas())} ventas.")
 
         elif opt == "2":
             nombre = input("Nombre del producto: ").strip()
@@ -69,7 +57,7 @@ def menu() -> None:
         elif opt == "3":
             productos = sistema.obtener_productos()
             if not productos:
-                print("No hay productos registrados. Agrega productos primero o genera datos simulados.")
+                print("No hay productos registrados. Agrega productos primero o carga datos desde CSV.")
                 continue
             print("Catálogo:")
             for i, p in enumerate(productos, start=1):

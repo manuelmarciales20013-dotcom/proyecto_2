@@ -45,9 +45,11 @@ class SistemaDeVentas:
             prod = v.get_producto()
             rows.append({
                 "producto": prod.get_nombre(),
+                "categoria": prod.get_categoria(),
                 "cantidad": v.get_cantidad(),
                 "precio_unitario": prod.get_precio_unitario(),
                 "total": v.calcular_total(),
+                "tienda": v.get_tienda(),
             })
         df = pd.DataFrame(rows)
         return df
@@ -58,13 +60,22 @@ class SistemaDeVentas:
     def obtener_ventas(self) -> List[Venta]:
         return list(self._ventas)
 
-    def cargar_datos_simulados(self, n: int = 30, seed: int | None = None) -> None:
-        from generador import generar_catalogo, generar_ventas
-
-        productos = generar_catalogo()
-        ventas = generar_ventas(productos, n=n, seed=seed)
-
-        for p in productos:
+    def cargar_csv(self, ruta: str) -> None:
+        """Carga productos y ventas desde un archivo CSV."""
+        import pandas as pd
+        df = pd.read_csv(ruta)
+        for _, fila in df.iterrows():
+            p = Producto(fila["producto"], float(fila["precio_unitario"]), str(fila["categoria"]))
             self.registrar_producto(p)
-        for v in ventas:
+            # Buscar el producto ya registrado para mantener la composición
+            producto_reg = self._buscar_producto(fila["producto"])
+            v = Venta(producto_reg, int(fila["unidades_vendidas"]), str(fila["tienda"]))
             self.registrar_venta(v)
+
+    def _buscar_producto(self, nombre: str) -> Producto:
+        """Busca un producto por nombre en el catálogo."""
+        nombre_lower = nombre.strip().lower()
+        for p in self._productos:
+            if p.get_nombre().strip().lower() == nombre_lower:
+                return p
+        raise ProductoInvalido(f"Producto '{nombre}' no encontrado en el catálogo.")
