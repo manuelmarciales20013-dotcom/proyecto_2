@@ -41,7 +41,7 @@ def menu() -> None:
         opt = input("Selecciona una opción: ").strip()
 
         if opt == "1":
-            sistema.cargar_csv("datos/ventas_tienda.csv")
+            sistema.cargar_csv("../datos/ventas_tienda.csv")
             print(f"Cargados {len(sistema.obtener_productos())} productos y {len(sistema.obtener_ventas())} ventas.")
 
         elif opt == "2":

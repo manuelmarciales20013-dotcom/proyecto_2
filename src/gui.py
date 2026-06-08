@@ -5,7 +5,7 @@ Usa las mismas clases del proyecto:
   - Producto, Venta, SistemaDeVentas, Analizador.
 
 Para ejecutar:
-    python gui.py
+    python src/gui.py
 """
 
 import tkinter as tk
@@ -32,7 +32,7 @@ FUENTE_NORMAL     = ("Segoe UI", 10)
 FUENTE_PEQUENA    = ("Segoe UI", 9)
 
 # Ruta al CSV (relativa a la ubicación del script)
-RUTA_CSV = os.path.join(os.path.dirname(__file__), "datos", "ventas_tienda.csv")
+RUTA_CSV = os.path.join(os.path.dirname(__file__), "..", "datos", "ventas_tienda.csv")
 
 
 class AplicacionVentas:
