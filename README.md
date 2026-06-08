@@ -1,6 +1,6 @@
 # Sistema de Análisis de Ventas
 
-Proyecto educativo en Python para registrar ventas y calcular métricas comerciales.
+Sistema educativo en Python para registrar ventas, analizar resultados y generar métricas comerciales. Diseñado para aprendizaje y demostraciones, con código claro y soporte para análisis con pandas y numpy.
 
 ## Descripción
 
