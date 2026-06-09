@@ -1,6 +1,3 @@
 # Archivos de caché de Python
 __pycache__/
 *.pyc
-
-# Archivos de datos locales (opcional, si no quieres subir tus CSV reales)
-datos/*.csv
