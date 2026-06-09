@@ -1,10 +1,15 @@
 """main.py
-Menú interactivo para el sistema de ventas.
+Menú interactivo por consola para el Sistema de Ventas.
 """
+import os
 from sistema_ventas import SistemaDeVentas
 from producto import Producto
 from venta import Venta
 from analizador import Analizador
+
+
+# Ruta al CSV (sube un nivel desde src/)
+RUTA_CSV = os.path.join(os.path.dirname(__file__), "..", "datos", "Ventas.csv")
 
 
 def _input_int(prompt: str, default: int | None = None) -> int:
@@ -41,23 +46,25 @@ def menu() -> None:
         opt = input("Selecciona una opción: ").strip()
 
         if opt == "1":
-            sistema.cargar_csv("../datos/ventas_tienda.csv")
-            print(f"Cargados {len(sistema.obtener_productos())} productos y {len(sistema.obtener_ventas())} ventas.")
+            sistema.cargar_csv(RUTA_CSV)
+            print(f"Cargados {len(sistema.obtener_productos())} productos "
+                  f"y {len(sistema.obtener_ventas())} ventas.")
 
         elif opt == "2":
             nombre = input("Nombre del producto: ").strip()
             precio = _input_float("Precio unitario: ")
+            categoria = input("Categoría: ").strip() or "General"
             try:
-                p = Producto(nombre, precio)
-                added = sistema.registrar_producto(p)
-                print("Producto registrado." if added else "El producto ya existe en el catálogo.")
+                p = Producto(nombre, precio, categoria)
+                agregado = sistema.registrar_producto(p)
+                print("Producto registrado." if agregado else "El producto ya existe.")
             except Exception as e:
                 print("Error al crear producto:", e)
 
         elif opt == "3":
             productos = sistema.obtener_productos()
             if not productos:
-                print("No hay productos registrados. Agrega productos primero o carga datos desde CSV.")
+                print("No hay productos. Carga el CSV primero o registra productos.")
                 continue
             print("Catálogo:")
             for i, p in enumerate(productos, start=1):
@@ -67,8 +74,9 @@ def menu() -> None:
                 print("Selección inválida.")
                 continue
             cantidad = _input_int("Cantidad: ")
+            temporada = input("Temporada (Spring/Summer/Fall/Winter): ").strip() or "General"
             try:
-                v = Venta(productos[idx - 1], cantidad)
+                v = Venta(productos[idx - 1], cantidad, temporada)
                 sistema.registrar_venta(v)
                 print("Venta registrada.")
             except Exception as e:
