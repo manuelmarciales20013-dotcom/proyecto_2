@@ -23,26 +23,24 @@ from sistema_ventas import SistemaDeVentas
 from analizador import Analizador
 from exportador import exportar_csv, exportar_txt, exportar_grafica_png
 
-import pathlib
-
 # ═══════════════════════════════════════════════════════════════
-# PALETA Y TIPOGRAFÍA
+# PALETA Y TIPOGRAFÍA  ·  Light Blue (Power BI style)
 # ═══════════════════════════════════════════════════════════════
-BG          = "#0F1923"   # azul noche muy oscuro
-PANEL       = "#162232"   # azul medio panel
-CARD        = "#1E3048"   # azul card
-BORDER      = "#2A4060"   # borde sutil
-ACCENT1     = "#00C9A7"   # verde menta vibrante
-ACCENT2     = "#4F8EF7"   # azul eléctrico
-ACCENT3     = "#F9C74F"   # amarillo cálido
-ACCENT4     = "#F25F5C"   # rojo coral
-ACCENT5     = "#9B72CF"   # lila
-TXT_MAIN    = "#E8F0FE"   # blanco azulado
-TXT_SUB     = "#8BA3C0"   # gris azulado
-TXT_MUTED   = "#4A6080"   # gris oscuro
+BG          = "#F5F9FD"   # fondo blanco azulado
+PANEL       = "#DDEAF6"   # panel azul pálido
+CARD        = "#EBF3FA"   # card azul muy claro
+BORDER      = "#BDD7EE"   # borde azul suave
+ACCENT1     = "#1F4E79"   # azul marino oscuro — principal
+ACCENT2     = "#2E75B6"   # azul medio
+ACCENT3     = "#4472C4"   # azul royal
+ACCENT4     = "#ED7D31"   # naranja — alertas / contraste
+ACCENT5     = "#5B9BD5"   # azul claro
+TXT_MAIN    = "#172B4D"   # texto principal oscuro
+TXT_SUB     = "#2E5A8A"   # texto azul secundario
+TXT_MUTED   = "#7BA7C9"   # texto muted grisáceo
 
-PALETTE     = [ACCENT2, ACCENT1, ACCENT3, ACCENT4, ACCENT5,
-               "#48CAE4", "#FF9F1C", "#80B918", "#E040FB", "#00B4D8"]
+PALETTE     = ["#2E75B6", "#1F4E79", "#4472C4", "#9DC3E6", "#5B9BD5",
+               "#BDD7EE", "#172B4D", "#70B0D9", "#A8C8E5", "#DDEBF7"]
 
 F_TITLE     = ("Segoe UI", 15, "bold")
 F_SUBTITLE  = ("Segoe UI", 11, "bold")
@@ -51,7 +49,7 @@ F_SMALL     = ("Segoe UI", 9)
 F_KPI       = ("Segoe UI", 22, "bold")
 F_KPI_LABEL = ("Segoe UI", 9)
 
-RUTA_CSV = pathlib.Path(__file__).parent.parent / "datos" / "Ventas.csv"
+RUTA_CSV = r"C:\Users\Jhan\Documents\ProyectoProgramacionVentas\proyecto_2\datos\Ventas.csv"
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -67,6 +65,7 @@ def _apply_dark_style(ax, fig):
     ax.title.set_color(TXT_MAIN)
     for spine in ax.spines.values():
         spine.set_edgecolor(BORDER)
+    ax.title.set_fontweight("bold")
 
 
 def _fmt_miles(ax, axis="y"):
@@ -249,7 +248,7 @@ class AplicacionVentas:
             t.set_color(TXT_SUB)
             t.set_fontsize(8)
         for at in autotexts:
-            at.set_color(BG)
+            at.set_color("white")
             at.set_fontsize(8)
             at.set_fontweight("bold")
         ax2.set_title("Distribución por temporada", fontsize=10, color=TXT_MAIN, pad=8)
@@ -339,7 +338,7 @@ class AplicacionVentas:
 
         # Alternar color de filas
         self._tree.tag_configure("par",   background=CARD)
-        self._tree.tag_configure("impar", background="#182B3E")
+        self._tree.tag_configure("impar", background="#F0F7FD")
 
         scrolly.pack(side="right", fill="y")
         scrollx.pack(side="bottom", fill="x")
@@ -493,7 +492,7 @@ class AplicacionVentas:
             startangle=90, wedgeprops=dict(linewidth=1.5, edgecolor=PANEL),
         )
         for t in texts:   t.set_color(TXT_SUB); t.set_fontsize(9)
-        for at in autotexts: at.set_color(BG); at.set_fontsize(8); at.set_fontweight("bold")
+        for at in autotexts: at.set_color("white"); at.set_fontsize(8); at.set_fontweight("bold")
         ax.set_title("Distribución de ventas por temporada", color=TXT_MAIN, pad=10)
         plt.tight_layout()
         return fig
@@ -541,8 +540,8 @@ class AplicacionVentas:
         # Línea de media y mediana
         media   = vals.mean()
         mediana = vals.median()
-        ax.axvline(media,   color=ACCENT3, linewidth=1.5, linestyle="--", label=f"Media ${media:,.0f}")
-        ax.axvline(mediana, color=ACCENT4, linewidth=1.5, linestyle=":",  label=f"Mediana ${mediana:,.0f}")
+        ax.axvline(media,   color=ACCENT1, linewidth=1.8, linestyle="--", label=f"Media ${media:,.0f}")
+        ax.axvline(mediana, color=ACCENT4, linewidth=1.8, linestyle=":",  label=f"Mediana ${mediana:,.0f}")
         ax.legend(fontsize=8, facecolor=CARD, edgecolor=BORDER, labelcolor=TXT_MAIN)
         ax.set_title("Distribución de precios de compra", pad=10)
         ax.set_xlabel("Precio ($)")
@@ -576,7 +575,7 @@ class AplicacionVentas:
         z = np.polyfit(sub["edad"], sub["total"], 1)
         p = np.poly1d(z)
         x_line = np.linspace(sub["edad"].min(), sub["edad"].max(), 100)
-        ax.plot(x_line, p(x_line), color=ACCENT3, linewidth=1.5, linestyle="--", label="Tendencia")
+        ax.plot(x_line, p(x_line), color=ACCENT4, linewidth=1.8, linestyle="--", label="Tendencia")
         r = self.analizador.correlacion_edad_gasto()
         ax.set_title(f"Edad vs. Gasto  (r = {r:.3f})", pad=10)
         ax.set_xlabel("Edad")
