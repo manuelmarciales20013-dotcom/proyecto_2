@@ -36,7 +36,15 @@ _COL = {
 class SistemaDeVentas:
     def __init__(self):
         self._productos: List[Producto] = []
+        self._productos_dict: dict = {}  # nombre_lower -> Producto
         self._ventas:    List[Venta]    = []
+
+    def limpiar(self) -> None:
+        """Limpia el catálogo de productos y la lista de ventas."""
+        self._productos.clear()
+        self._productos_dict.clear()
+        self._ventas.clear()
+
 
     # ── Registro ──────────────────────────────────────────────────
 
@@ -45,9 +53,10 @@ class SistemaDeVentas:
         if not isinstance(producto, Producto):
             raise ProductoInvalido("Objeto no es un Producto válido.")
         nombre = producto.get_nombre().strip().lower()
-        if any(p.get_nombre().strip().lower() == nombre for p in self._productos):
+        if nombre in self._productos_dict:
             return False
         self._productos.append(producto)
+        self._productos_dict[nombre] = producto
         return True
 
     def registrar_venta(self, venta: Venta) -> None:
@@ -156,9 +165,49 @@ class SistemaDeVentas:
             )
             self.registrar_venta(v)
 
+    def guardar_venta_csv(self, venta: Venta, ruta_csv: str) -> None:
+        """Guarda la venta en disco añadiéndola al CSV."""
+        import os
+        p = venta.get_producto()
+        def to_yes_no(val: bool) -> str:
+            return "Yes" if val else "No"
+            
+        fila_dict = {
+            "Customer ID": "",
+            "Age": venta.get_edad() if venta.get_edad() > 0 else "",
+            "Gender": venta.get_genero() or "N/A",
+            "Item Purchased": p.get_nombre(),
+            "Category": p.get_categoria(),
+            "Purchase Amount (USD)": p.get_precio_unitario(),
+            "Location": venta.get_ubicacion() or "N/A",
+            "Size": p.get_talla() or "N/A",
+            "Color": p.get_color() or "N/A",
+            "Season": venta.get_temporada() or "N/A",
+            "Review Rating": venta.get_calificacion() if venta.get_calificacion() > 0 else "",
+            "Subscription Status": to_yes_no(p.get_suscripcion()),
+            "Payment Method": venta.get_metodo_pago() or "N/A",
+            "Shipping Type": venta.get_tipo_envio() or "N/A",
+            "Discount Applied": to_yes_no(venta.get_descuento()),
+            "Promo Code Used": to_yes_no(venta.get_codigo_promo()),
+            "Previous Purchases": venta.get_compras_previas(),
+            "Preferred Payment Method": venta.get_metodo_pago() or "N/A",
+            "Frequency of Purchases": venta.get_frecuencia_compra() or "N/A",
+        }
+
+        if not os.path.exists(ruta_csv):
+            pd.DataFrame([fila_dict]).to_csv(ruta_csv, index=False)
+        else:
+            try:
+                # Obtener las columnas del CSV original
+                cols = pd.read_csv(ruta_csv, nrows=0).columns.tolist()
+                fila_ordenada = {col: fila_dict.get(col, "") for col in cols}
+                pd.DataFrame([fila_ordenada]).to_csv(ruta_csv, mode='a', header=False, index=False)
+            except Exception:
+                # Si falla leer columnas, fall-back genérico
+                pd.DataFrame([fila_dict]).to_csv(ruta_csv, mode='a', header=False, index=False)
+
     def _buscar_producto(self, nombre: str) -> Producto:
         nombre_lower = nombre.strip().lower()
-        for p in self._productos:
-            if p.get_nombre().strip().lower() == nombre_lower:
-                return p
+        if nombre_lower in self._productos_dict:
+            return self._productos_dict[nombre_lower]
         raise ProductoInvalido(f"Producto '{nombre}' no encontrado.")

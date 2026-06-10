@@ -42,9 +42,6 @@ class Producto:
 
         # ── Talla (opcional) ────────────────────────────────────
         talla = str(talla).strip().upper() if talla else ""
-        if talla and talla not in TALLAS_VALIDAS:
-            # Aceptar cualquier talla desconocida sin lanzar excepción
-            pass
 
         # ── Atributos privados ──────────────────────────────────
         self._nombre = nombre

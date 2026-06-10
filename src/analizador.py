@@ -39,6 +39,34 @@ class Analizador:
         return col in self._ext and not self.df[col].isna().all()
 
     # ════════════════════════════════════════════════════════════
+    # HELPERS INTERNOS
+    # ════════════════════════════════════════════════════════════
+
+    def _agrupar(self, col_group: str, col_val: str, func: str = "sum", sort: bool = True, asc: bool = False, head: int = None, filter_mask: pd.Series = None) -> pd.Series:
+        if not self._tiene(col_group) and col_group not in self.COLUMNAS_REQUERIDAS:
+            return pd.Series(dtype=float)
+        
+        d = self.df if filter_mask is None else self.df[filter_mask]
+        
+        grouped = d.groupby(col_group)[col_val].agg(func)
+        if sort:
+            grouped = grouped.sort_values(ascending=asc)
+        if head:
+            grouped = grouped.head(head)
+        return grouped
+
+    def _correlacion(self, col_a: str, col_b: str) -> float:
+        if not self._tiene(col_a) and col_a not in self.COLUMNAS_REQUERIDAS:
+            return float("nan")
+        if not self._tiene(col_b) and col_b not in self.COLUMNAS_REQUERIDAS:
+            return float("nan")
+            
+        sub = self.df[[col_a, col_b]].dropna()
+        if len(sub) < 2:
+            return float("nan")
+        return float(np.corrcoef(sub[col_a], sub[col_b])[0, 1])
+
+    # ════════════════════════════════════════════════════════════
     # MÉTRICAS ORIGINALES
     # ════════════════════════════════════════════════════════════
 
@@ -46,25 +74,25 @@ class Analizador:
         return float(self.df["total"].sum()) if not self.df.empty else 0.0
 
     def producto_mas_vendido(self) -> pd.Series:
-        return self.df.groupby("producto")["cantidad"].sum().sort_values(ascending=False).head(1)
+        return self._agrupar("producto", "cantidad", head=1)
 
     def producto_menos_demanda(self) -> pd.Series:
-        return self.df.groupby("producto")["cantidad"].sum().sort_values().head(1)
+        return self._agrupar("producto", "cantidad", asc=True, head=1)
 
     def ingreso_promedio_por_venta(self) -> float:
         return float(self.df["total"].mean()) if not self.df.empty else 0.0
 
     def ingreso_promedio_por_producto(self) -> pd.Series:
-        return self.df.groupby("producto")["total"].mean().sort_values(ascending=False)
+        return self._agrupar("producto", "total", func="mean")
 
     def ventas_por_categoria(self) -> pd.Series:
-        return self.df.groupby("categoria")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("categoria", "total")
 
     def unidades_por_categoria(self) -> pd.Series:
-        return self.df.groupby("categoria")["cantidad"].sum().sort_values(ascending=False)
+        return self._agrupar("categoria", "cantidad")
 
     def ventas_por_temporada(self) -> pd.Series:
-        return self.df.groupby("temporada")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("temporada", "total")
 
     # ════════════════════════════════════════════════════════════
     # MÉTRICAS NUEVAS — ESTADÍSTICAS DESCRIPTIVAS
@@ -73,6 +101,8 @@ class Analizador:
     def estadisticas_precio(self) -> Dict[str, float]:
         """Media, mediana, desv. estándar, percentil 25/75 y rango del precio."""
         s = self.df["total"]
+        if s.empty:
+            return {}
         return {
             "media":     float(s.mean()),
             "mediana":   float(s.median()),
@@ -88,11 +118,11 @@ class Analizador:
 
     def top_productos_ingreso(self, n: int = 10) -> pd.Series:
         """Top N productos por ingreso total."""
-        return self.df.groupby("producto")["total"].sum().sort_values(ascending=False).head(n)
+        return self._agrupar("producto", "total", head=n)
 
     def ticket_promedio_por_categoria(self) -> pd.Series:
         """Ticket promedio (total / nro de ventas) por categoría."""
-        return self.df.groupby("categoria")["total"].mean().sort_values(ascending=False)
+        return self._agrupar("categoria", "total", func="mean")
 
     # ════════════════════════════════════════════════════════════
     # MÉTRICAS NUEVAS — DEMOGRÁFICAS
@@ -100,20 +130,18 @@ class Analizador:
 
     def ventas_por_genero(self) -> pd.Series:
         """Total vendido por género."""
-        if not self._tiene("genero"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("genero")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("genero", "total")
 
     def unidades_por_genero(self) -> pd.Series:
-        if not self._tiene("genero"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("genero")["cantidad"].sum().sort_values(ascending=False)
+        return self._agrupar("genero", "cantidad")
 
     def distribucion_edad(self) -> Dict[str, Any]:
         """Estadísticas de la distribución de edad de clientes."""
         if not self._tiene("edad"):
             return {}
         edades = self.df["edad"].dropna()
+        if edades.empty:
+            return {}
         return {
             "media":   float(edades.mean()),
             "mediana": float(edades.median()),
@@ -133,24 +161,18 @@ class Analizador:
 
     def top_ubicaciones(self, n: int = 10) -> pd.Series:
         """Top N estados/ciudades por volumen de ventas."""
-        if not self._tiene("ubicacion"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("ubicacion")["total"].sum().sort_values(ascending=False).head(n)
+        return self._agrupar("ubicacion", "total", head=n)
 
     def ventas_por_ubicacion(self) -> pd.Series:
         """Total de ventas por cada ubicación."""
-        if not self._tiene("ubicacion"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("ubicacion")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("ubicacion", "total")
 
     # ════════════════════════════════════════════════════════════
     # MÉTRICAS NUEVAS — TRANSACCIONALES
     # ════════════════════════════════════════════════════════════
 
     def ventas_por_metodo_pago(self) -> pd.Series:
-        if not self._tiene("metodo_pago"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("metodo_pago")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("metodo_pago", "total")
 
     def uso_descuentos(self) -> Dict[str, Any]:
         """Porcentaje de ventas con descuento y diferencia de ticket promedio."""
@@ -181,9 +203,7 @@ class Analizador:
         }
 
     def ventas_por_tipo_envio(self) -> pd.Series:
-        if not self._tiene("tipo_envio"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("tipo_envio")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("tipo_envio", "total")
 
     # ════════════════════════════════════════════════════════════
     # MÉTRICAS NUEVAS — CALIDAD / FIDELIZACIÓN
@@ -192,22 +212,12 @@ class Analizador:
     def calificacion_promedio_por_producto(self) -> pd.Series:
         if not self._tiene("calificacion"):
             return pd.Series(dtype=float)
-        return (
-            self.df[self.df["calificacion"] > 0]
-            .groupby("producto")["calificacion"]
-            .mean()
-            .sort_values(ascending=False)
-        )
+        return self._agrupar("producto", "calificacion", func="mean", filter_mask=(self.df["calificacion"] > 0))
 
     def calificacion_promedio_por_categoria(self) -> pd.Series:
         if not self._tiene("calificacion"):
             return pd.Series(dtype=float)
-        return (
-            self.df[self.df["calificacion"] > 0]
-            .groupby("categoria")["calificacion"]
-            .mean()
-            .sort_values(ascending=False)
-        )
+        return self._agrupar("categoria", "calificacion", func="mean", filter_mask=(self.df["calificacion"] > 0))
 
     def distribucion_calificaciones(self) -> pd.Series:
         """Conteo de reseñas por estrella (1–5)."""
@@ -221,9 +231,7 @@ class Analizador:
         )
 
     def ventas_por_frecuencia(self) -> pd.Series:
-        if not self._tiene("frecuencia_compra"):
-            return pd.Series(dtype=float)
-        return self.df.groupby("frecuencia_compra")["total"].sum().sort_values(ascending=False)
+        return self._agrupar("frecuencia_compra", "total")
 
     def clientes_recurrentes_vs_nuevos(self) -> Dict[str, Any]:
         """Clientes con compras previas > 0 vs. nuevos."""
@@ -246,21 +254,11 @@ class Analizador:
 
     def correlacion_edad_gasto(self) -> float:
         """Correlación de Pearson entre edad y monto gastado."""
-        if not self._tiene("edad"):
-            return float("nan")
-        sub = self.df[["edad", "total"]].dropna()
-        if len(sub) < 2:
-            return float("nan")
-        return float(np.corrcoef(sub["edad"], sub["total"])[0, 1])
+        return self._correlacion("edad", "total")
 
     def correlacion_compras_previas_gasto(self) -> float:
         """Correlación entre historial de compras previas y ticket actual."""
-        if not self._tiene("compras_previas"):
-            return float("nan")
-        sub = self.df[["compras_previas", "total"]].dropna()
-        if len(sub) < 2:
-            return float("nan")
-        return float(np.corrcoef(sub["compras_previas"], sub["total"])[0, 1])
+        return self._correlacion("compras_previas", "total")
 
     def correlacion_calificacion_gasto(self) -> float:
         """Correlación entre calificación del producto y gasto."""
@@ -283,10 +281,10 @@ class Analizador:
 
         resumen: Dict[str, Any] = {
             # Originales
-            "total_ventas":                  stats["total"],
+            "total_ventas":                  stats.get("total", 0.0),
             "producto_mas_vendido":          self.producto_mas_vendido(),
             "producto_menos_demandado":      self.producto_menos_demanda(),
-            "ingreso_promedio_por_venta":    stats["media"],
+            "ingreso_promedio_por_venta":    stats.get("media", 0.0),
             "ingreso_promedio_por_producto": self.ingreso_promedio_por_producto(),
             "ventas_por_categoria":          self.ventas_por_categoria(),
             "ventas_por_temporada":          self.ventas_por_temporada(),
@@ -311,7 +309,7 @@ class Analizador:
             "corr_calificacion_gasto":       self.correlacion_calificacion_gasto(),
         }
 
-        if imprimir:
+        if imprimir and stats:
             print(f"Total ventas:            ${stats['total']:,.2f}")
             print(f"Ticket promedio:         ${stats['media']:,.2f}")
             print(f"Desv. estándar:          ${stats['std']:,.2f}")
