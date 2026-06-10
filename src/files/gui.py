@@ -23,6 +23,8 @@ from sistema_ventas import SistemaDeVentas
 from analizador import Analizador
 from exportador import exportar_csv, exportar_txt, exportar_grafica_png
 
+import pathlib
+
 # ═══════════════════════════════════════════════════════════════
 # PALETA Y TIPOGRAFÍA
 # ═══════════════════════════════════════════════════════════════
@@ -49,7 +51,7 @@ F_SMALL     = ("Segoe UI", 9)
 F_KPI       = ("Segoe UI", 22, "bold")
 F_KPI_LABEL = ("Segoe UI", 9)
 
-RUTA_CSV = r"C:\Users\Jhan\Documents\ProyectoProgramacionVentas\proyecto_2\datos\Ventas.csv"
+RUTA_CSV = pathlib.Path(__file__).parent.parent / "datos" / "Ventas.csv"
 
 
 # ═══════════════════════════════════════════════════════════════

@@ -1,100 +1,25 @@
-📐 Plano arquitectónico: Sistema de Análisis de Ventas
-1. Estructura de archivos recomendada
-Para un proyecto académico bien presentado en segundo semestre, la opción equilibrada es un archivo por clase + main.py. Es la más profesional sin caer en sobreingeniería:
-sistema_ventas/
+ProyectoProgramacionVentas/
 │
-├── main.py                 # Punto de entrada + menú interactivo
-├── producto.py             # Clase Producto
-├── venta.py                # Clase Venta
-├── sistema_ventas.py       # Clase SistemaDeVentas
-├── analizador.py           # Clase Analizador
-├── generador.py            # Función para generar datos simulados
-└── README.md               # Documentación del proyecto
-Por qué esta estructura: demuestra modularidad (un concepto que viene en Programación 2), facilita la lectura del profesor, y separa responsabilidades. Cada archivo tiene un único propósito claro.
-
-2. Diseño detallado de cada clase
-🔹 Producto
-
-Atributos privados: _nombre, _precio_unitario
-Constructor: valida que nombre no esté vacío y precio > 0; lanza ValueError si falla
-Getters: get_nombre(), get_precio_unitario()
-__str__: devuelve algo como "Camisa azul ($25.000)"
-
-🔹 Venta
-
-Atributos privados: _producto (objeto Producto), _cantidad
-Constructor: valida que cantidad > 0; lanza ValueError
-Getters: get_producto(), get_cantidad()
-calcular_total(): retorna cantidad × producto.precio_unitario
-__str__: "3 × Camisa azul = $75.000"
-
-🔹 SistemaDeVentas
-
-Atributos privados: _productos (lista), _ventas (lista)
-Métodos:
-
-registrar_producto(producto) → agrega al catálogo, evita duplicados
-registrar_venta(venta) → agrega a la lista
-listar_productos(), listar_ventas() → impresión por consola
-obtener_dataframe() → clave: itera la lista de ventas y construye un DataFrame con columnas [producto, cantidad, precio_unitario, total]
-cargar_datos_simulados() → invoca al generador
-
-
-
-🔹 Analizador
-
-Constructor: recibe el DataFrame del Sistema
-Métodos (todos usan pandas/numpy):
-
-total_ventas() → suma de la columna total
-producto_mas_vendido() → groupby('producto').sum() sobre cantidad, ordenar y tomar el primero
-producto_menos_demanda() → mismo groupby, tomar el último
-ingreso_promedio_por_venta() → np.mean() sobre la columna total
-ingreso_promedio_por_producto() → groupby + mean
-resumen_general() → imprime todas las métricas formateadas
-
-
-
-🔹 generador.py (módulo, no clase)
-
-Función generar_catalogo() → crea 5 productos hardcodeados (camisa, pantalón, zapatos, gorra, cinturón)
-Función generar_ventas(productos, n=30, pesos=[40,25,15,12,8]) → usa random.choices() con pesos para crear 30 ventas con distribución sesgada
-Devuelve la lista de productos y la lista de ventas, listas para ser cargadas al Sistema
-
-
-3. Flujo de ejecución del programa
-main.py se ejecuta
-    ↓
-Crea instancia de SistemaDeVentas (vacío)
-    ↓
-Muestra menú en bucle while:
-    1) Generar datos → llama a generador, carga al sistema
-    2) Registrar producto → pide datos por input(), crea Producto, registra
-    3) Registrar venta → muestra catálogo, pide selección y cantidad, crea Venta
-    4) Listar ventas → sistema.listar_ventas()
-    5) Ver métricas → crea Analizador con el DataFrame, llama resumen_general()
-    6) Salir → break
-
-4. Métricas que cubrirás (con técnica pandas/numpy)
-Funcionalidad pedidaTécnicaRegistro de productos vendidosLista de objetos Venta en el SistemaCantidad y precioAtributos de Venta y ProductoTotal de ventasdf['total'].sum()Productos más vendidosdf.groupby('producto')['cantidad'].sum().sort_values(ascending=False)Ingresos promedionp.mean(df['total']) y promedio por producto con groupbyProducto con menos demandamismo groupby, último elementoDashboard(pendiente, según indicaste)
-
-5. Lo que demostrarás en sustentación
-
-POO sólida: 4 clases con encapsulamiento (atributos privados con _), validaciones con excepciones, composición (Venta contiene Producto), métodos especiales (__str__)
-pandas/numpy aplicados: DataFrames, groupby, agregaciones, ordenamiento, funciones de numpy
-Modularidad: archivos separados con responsabilidades claras
-Datos realistas: generador con distribución sesgada para que las métricas sean significativas
-
-
-✅ Recomendación final antes de codificar
-Te sugiero seguir este orden de implementación, no de un solo tirón:
-
-producto.py — la clase más simple, te calienta
-venta.py — usa Producto, prueba la composición
-generador.py — te permite tener datos para probar lo siguiente
-sistema_ventas.py — el corazón del sistema
-analizador.py — donde brilla pandas/numpy
-main.py — el menú al final, cuando todo lo demás funciona
-README.md — al final, cuando ya sabes qué construiste
-
-Así puedes probar cada clase de forma aislada antes de integrarla. Si algo falla, sabes exactamente dónde está el bug.
+├── src/                          # Todo el código fuente
+│   ├── gui.py
+│   ├── sistema_ventas.py
+│   ├── analizador.py
+│   ├── exportador.py
+│   ├── producto.py
+│   ├── venta.py
+│   └── exceptions.py
+│
+├── datos/
+│   └── Ventas.csv                # O un CSV de muestra reducido
+│
+├── exports/                      # Carpeta que crea el programa al exportar
+│   └── .gitkeep                  # Archivo vacío para que git trackee la carpeta
+│
+├── assets/                       # Capturas de pantalla para el README
+│   ├── dashboard.png
+│   ├── graficas.png
+│   └── analisis.png
+│
+├── requirements.txt
+├── .gitignore
+└── README.md
